@@ -1,0 +1,89 @@
+# 1. Kelas Node: Blok bangunan dari setiap simpul di pohon
+class Node:
+    def __init__(self, data):
+        self.data = data
+        self.left = None  # Pointer (referensi) ke node anak di kiri
+        self.right = None # Pointer (referensi) ke node anak di kanan
+
+# 2. Kelas BinaryTree: Mengelola struktur pohon
+class BinaryTree:
+    def __init__(self):
+        self.root = None # Awalnya, pohon kosong
+
+    # Method untuk menyisipkan data ke dalam pohon
+    def insert(self, data):
+        print(f"\n--- Memulai penyisipan data: {data} ---")
+        if self.root is None:
+            # Jika pohon kosong, data baru menjadi root
+            self.root = Node(data)
+            print(f"Data {data} menjadi akar (root) pohon.")
+        else:
+            # Jika tidak kosong, cari posisi yang tepat
+            self._insert_recursive(self.root, data)
+        print(f"--- Penyisipan data {data} selesai. ---")
+        print("\nStruktur Pohon Saat Ini:")
+        self._display_tree_recursive(self.root) # Menampilkan struktur pohon setelah penyisipan
+
+
+    def _insert_recursive(self, current_node, data):
+        # Menampilkan posisi saat ini
+        print(f"  Sedang di node: {current_node.data}")
+
+        if data < current_node.data:
+            print(f"  Data {data} lebih kecil dari {current_node.data}. Bergerak ke KIRI.")
+            if current_node.left is None:
+                current_node.left = Node(data)
+                print(f"    Data {data} disisipkan sebagai anak KIRI dari {current_node.data}.")
+            else:
+                self._insert_recursive(current_node.left, data)
+        elif data > current_node.data:
+            print(f"  Data {data} lebih besar dari {current_node.data}. Bergerak ke KANAN.")
+            if current_node.right is None:
+                current_node.right = Node(data)
+                print(f"    Data {data} disisipkan sebagai anak KANAN dari {current_node.data}.")
+            else:
+                self._insert_recursive(current_node.right, data)
+        else:
+            print(f"  Data {data} sama dengan {current_node.data}. Duplikat tidak disisipkan.")
+
+    # Method baru untuk menampilkan struktur pohon dengan indentasi
+    def _display_tree_recursive(self, node, level=0, prefix="Root: "):
+        if node:
+            # Cetak node saat ini dengan indentasi yang sesuai levelnya
+            print("  " * level + prefix + str(node.data))
+            # Panggil rekursif untuk anak kiri dan kanan
+            if node.left or node.right: # Hanya cetak jika ada anak
+                self._display_tree_recursive(node.left, level + 1, "L: ")
+                self._display_tree_recursive(node.right, level + 1, "R: ")
+        elif prefix != "Root: ": # Untuk anak yang None (tidak ada) tapi perlu ditunjukkan posisinya
+            print("  " * level + prefix + "None")
+
+
+    # Method untuk menampilkan data dengan urutan in-order traversal (kiri-root-kanan)
+    def in_order_traversal(self, node, result=None):
+        if result is None:
+            result = []
+        if node:
+            self.in_order_traversal(node.left, result)
+            result.append(node.data)
+            self.in_order_traversal(node.right, result)
+        return result
+
+# --- Contoh Penggunaan ---
+# Membuat objek pohon biner
+my_tree = BinaryTree()
+
+# Menambahkan elemen ke dalam pohon dan melihat pergerakannya serta struktur pohon
+my_tree.insert(50)
+my_tree.insert(30)
+my_tree.insert(70)
+my_tree.insert(20)
+my_tree.insert(40)
+my_tree.insert(60)
+my_tree.insert(80)
+my_tree.insert(50) # Coba sisipkan duplikat
+my_tree.insert(10) # Menambahkan node yang akan berada di level lebih dalam
+
+# Menampilkan hasil traversal akhir
+print("\n===== Pohon Akhir (In-Order Traversal) =====")
+print(my_tree.in_order_traversal(my_tree.root))
