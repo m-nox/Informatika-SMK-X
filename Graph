@@ -1,0 +1,98 @@
+import collections
+
+# Kelas Graph: Merepresentasikan struktur Graph menggunakan adjacency list
+class Graph:
+    def __init__(self):
+        # adjacency_list adalah dictionary: {simpul: [daftar_simpul_terhubung]}
+        self.adjacency_list = collections.defaultdict(list)
+
+    # Menambahkan sisi (edge) ke graph
+    # Untuk graph tidak berarah, tambahkan koneksi dua arah
+    def add_edge(self, u, v):
+        self.adjacency_list[u].append(v)
+        self.adjacency_list[v].append(u) # Untuk graph tidak berarah
+
+    # Menampilkan struktur graph
+    def display_graph(self):
+        print("\n--- Struktur Graph ---")
+        for node, neighbors in self.adjacency_list.items():
+            print(f"Simpul {node} terhubung dengan: {neighbors}")
+        print("----------------------")
+
+    # Breadth-First Search (BFS): Menampilkan pergerakan node secara level demi level
+    def traverse_bfs(self, start_node):
+        print(f"\n--- Memulai Penelusuran BFS dari simpul: {start_node} ---")
+        if start_node not in self.adjacency_list:
+            print("Simpul awal tidak ada di graph.")
+            return
+
+        visited = set() # Set untuk melacak simpul yang sudah dikunjungi
+        queue = collections.deque() # Queue untuk menyimpan simpul yang akan dikunjungi
+
+        queue.append(start_node)
+        visited.add(start_node)
+        print(f"  Memasukkan simpul {start_node} ke antrean dan menandainya telah dikunjungi.")
+
+        while queue:
+            current_node = queue.popleft() # Ambil simpul dari depan antrean
+            print(f"  Mengunjungi simpul: {current_node}")
+
+            for neighbor in self.adjacency_list[current_node]:
+                if neighbor not in visited:
+                    visited.add(neighbor)
+                    queue.append(neighbor)
+                    print(f"    Menemukan tetangga {neighbor}. Memasukkannya ke antrean dan menandainya telah dikunjungi.")
+        print("--- Penelusuran BFS Selesai ---")
+
+    # Depth-First Search (DFS): Menampilkan pergerakan node secara mendalam
+    def traverse_dfs(self, start_node):
+        print(f"\n--- Memulai Penelusuran DFS dari simpul: {start_node} ---")
+        if start_node not in self.adjacency_list:
+            print("Simpul awal tidak ada di graph.")
+            return
+
+        visited = set() # Set untuk melacak simpul yang sudah dikunjungi
+        stack = [] # Menggunakan list sebagai stack untuk DFS
+
+        stack.append(start_node)
+        print(f"  Memasukkan simpul {start_node} ke tumpukan.")
+
+        while stack:
+            current_node = stack.pop() # Ambil simpul dari atas tumpukan
+            
+            if current_node not in visited:
+                visited.add(current_node)
+                print(f"  Mengunjungi simpul: {current_node}")
+
+                # Kunjungi tetangga. Tambahkan ke tumpukan dalam urutan terbalik
+                # agar tetangga pertama masuk lebih dulu (LIFO) dan dieksplorasi duluan
+                # jika ingin urutan numerik menaik, bisa diurutkan dulu: sorted(self.adjacency_list[current_node], reverse=True)
+                for neighbor in reversed(self.adjacency_list[current_node]):
+                    if neighbor not in visited:
+                        stack.append(neighbor)
+                        print(f"    Menemukan tetangga {neighbor}. Memasukkannya ke tumpukan.")
+        print("--- Penelusuran DFS Selesai ---")
+
+# --- Contoh Penggunaan Graph ---
+my_graph = Graph()
+
+# Menambahkan sisi-sisi ke graph
+my_graph.add_edge('A', 'B')
+my_graph.add_edge('A', 'C')
+my_graph.add_edge('B', 'D')
+my_graph.add_edge('C', 'E')
+my_graph.add_edge('D', 'F')
+my_graph.add_edge('E', 'F')
+my_graph.add_edge('G', 'H') # Contoh simpul yang terpisah
+
+# Menampilkan struktur graph
+my_graph.display_graph()
+
+# Menampilkan pergerakan node menggunakan BFS
+my_graph.traverse_bfs('A')
+
+# Menampilkan pergerakan node menggunakan DFS
+my_graph.traverse_dfs('A')
+
+# Contoh traversal dari simpul yang tidak terhubung (jika ada)
+my_graph.traverse_bfs('G')
